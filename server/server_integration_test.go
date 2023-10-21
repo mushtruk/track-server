@@ -1,15 +1,17 @@
-package server
+package main
 
 import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"trackserver/store"
 )
 
 func TestRecordingWinsAndRetrievingThem(t *testing.T) {
-	_store := store.NewInMemoryPlayerStore()
-	server := NewPlayerServer(_store)
+	database, cleanDatabase := createTempFile(t, `[]`)
+	defer cleanDatabase()
+	store := NewFileSystemPlayerStore(database)
+
+	server := NewPlayerServer(store)
 	player := "Pepper"
 
 	server.ServeHTTP(httptest.NewRecorder(), NewPostWinRequest(player))
@@ -30,7 +32,7 @@ func TestRecordingWinsAndRetrievingThem(t *testing.T) {
 		AssertStatus(t, response.Code, http.StatusOK)
 
 		got := getLeagueFromResponse(t, response.Body)
-		want := []store.Player{
+		want := []Player{
 			{"Pepper", 3},
 		}
 		assertLeague(t, got, want)

@@ -1,27 +1,26 @@
-package server
+package main
 
 import (
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"strings"
-	"trackserver/store"
 )
 
 type PlayerStore interface {
 	GetPlayerScore(name string) int
 	RecordWin(name string)
-	GetLeague() []store.Player
+	GetLeague() []Player
 }
 
 type PlayerServer struct {
-	store PlayerStore
+	store FileSystemPlayerStore
 	http.Handler
 }
 
-func NewPlayerServer(store PlayerStore) *PlayerServer {
+func NewPlayerServer(store *FileSystemPlayerStore) *PlayerServer {
 	p := new(PlayerServer)
-	p.store = store
+	p.store = *store
 
 	router := http.NewServeMux()
 
