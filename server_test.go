@@ -162,6 +162,7 @@ func TestGetPlayers(t *testing.T) {
 
 		AssertStatus(t, got, want)
 	})
+
 }
 
 func NewGetScoreRequest(name string) *http.Request {
